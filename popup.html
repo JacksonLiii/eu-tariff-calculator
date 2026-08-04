@@ -86,6 +86,74 @@
     color: #888;
     font-style: italic;
   }
+  #historySection {
+    margin-top: 14px;
+    border-top: 1px solid #e2e2e2;
+    padding-top: 8px;
+  }
+  #historyToggle {
+    width: 100%;
+    background: none;
+    color: #1a1a1a;
+    border: none;
+    padding: 4px 0;
+    margin-top: 0;
+    font-weight: 600;
+    font-size: 13px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+  }
+  #historyToggle:hover {
+    background: none;
+    color: #2563eb;
+  }
+  #historyBody {
+    display: none;
+  }
+  #historyList {
+    max-height: 160px;
+    overflow-y: auto;
+    margin-top: 6px;
+  }
+  .historyEmpty {
+    color: #888;
+    font-size: 11px;
+    padding: 4px 0;
+  }
+  .historyItem {
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
+    padding: 4px 0;
+    border-bottom: 1px solid #eee;
+    font-size: 11px;
+  }
+  .historyItem:last-child {
+    border-bottom: none;
+  }
+  .historyTime {
+    color: #888;
+    flex-shrink: 0;
+  }
+  .historyMain {
+    flex-grow: 1;
+    text-align: right;
+  }
+  #clearHistoryBtn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 6px;
+    font-size: 11px;
+    font-weight: normal;
+    color: #c0392b;
+    background: #fdf2f1;
+    border: 1px solid #f3c8c4;
+  }
+  #clearHistoryBtn:hover {
+    background: #fbe4e2;
+  }
 </style>
 </head>
 <body>
@@ -121,6 +189,17 @@
     清关处理费(~€2/包裹)预计2026年11月上线，暂未计入。数据来源：Council Regulation (EU) 2026/382；最后核实日期：2026-08-04。
   </div>
   <div class="disclaimer">仅供参考，非正式关务/税务意见。</div>
+
+  <div id="historySection">
+    <button id="historyToggle" type="button">
+      <span>历史记录</span>
+      <span id="historyToggleIcon">▸</span>
+    </button>
+    <div id="historyBody">
+      <div id="historyList"></div>
+      <button id="clearHistoryBtn" type="button">清空历史</button>
+    </div>
+  </div>
 
   <script src="calculator.js"></script>
   <script src="popup.js"></script>

@@ -5,5 +5,6 @@
   "description": "面向跨境独立站/DTC卖家的估算工具：按2026年7月起欧盟新关税规则，快速估算卖到欧盟的关税、VAT与落地总成本。",
   "action": {
     "default_popup": "popup.html"
-  }
+  },
+  "permissions": ["storage"]
 }
