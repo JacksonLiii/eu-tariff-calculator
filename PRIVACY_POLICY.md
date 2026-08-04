@@ -43,7 +43,7 @@ The extension does **not**:
 ### 3.1 Creem (creem.io)
 Purchases are handled entirely by Creem, our payment processor. When you choose to upgrade to Pro, the extension opens Creem's own checkout page in a new browser tab — you complete the purchase directly on Creem's site. The extension itself never sees or handles your payment details (card number, billing address, email, etc.); that information goes directly to Creem, not to us.
 
-Please refer to Creem's own privacy policy for how they handle your payment and checkout information: [Creem Privacy Policy — link to be added].
+Please refer to Creem's own privacy policy for how they handle your payment and checkout information: [Creem Privacy Notice](https://www.creem.io/privacy) (published by Armitage Labs OÜ, Estonia).
 
 ### 3.2 Cloudflare Workers (license verification)
 We use a Cloudflare Worker as a lightweight relay solely to check whether a License Key you enter is valid with Creem. Our Worker code does not store or log your data — it simply forwards the key for a validity check and returns the result.

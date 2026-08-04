@@ -83,7 +83,13 @@ We may update, change, or discontinue the extension or any of its features at an
 
 We may also revise these terms. When we do, we will update the "Last updated" date at the top of this page. Material changes will not be applied retroactively to a purchase you have already made. Continuing to use the extension after a change means you accept the revised terms.
 
-## 9. Contact
+## 9. Governing law
+
+These terms are governed by the laws of the People's Republic of China, without regard to conflict-of-law rules.
+
+If you use the extension as a consumer, this does not deprive you of the protection of any mandatory consumer-protection rules of the country where you habitually reside. Where those rules give you rights that cannot be waived by agreement, those rights continue to apply alongside these terms.
+
+## 10. Contact
 
 Questions about these terms, or a refund request:
 
