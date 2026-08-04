@@ -66,4 +66,4 @@ This extension is an estimation tool. The duty, VAT, and total landed cost figur
 
 If you have questions about this privacy policy or how your data is handled, contact us at:
 
-**lidingyao44@gmail.com**
+**support@eutariffcalculator.com**

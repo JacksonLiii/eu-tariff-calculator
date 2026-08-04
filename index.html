@@ -35,13 +35,22 @@
     color: #59636e;
     margin-top: -.5rem;
   }
-  .privacy-link {
-    display: inline-block;
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
     margin: .5rem 0 2rem;
+  }
+  .doc-link {
+    display: inline-block;
     padding: .6em 1.2em;
     border: 1px solid #d1d9e0;
     border-radius: 6px;
     font-weight: 600;
+  }
+  .price {
+    font-weight: 600;
+    color: #1f2328;
   }
   .note {
     padding: .75rem 1rem;
@@ -64,7 +73,10 @@
 
 <p class="tagline">Estimate EU duty, VAT &amp; total landed cost under the new July 2026 tariff rules. For cross-border and DTC sellers.</p>
 
-<p><a class="privacy-link" href="PRIVACY_POLICY.html">Privacy Policy &rarr;</a></p>
+<p class="doc-links">
+  <a class="doc-link" href="PRIVACY_POLICY.html">Privacy Policy &rarr;</a>
+  <a class="doc-link" href="TERMS_OF_SERVICE.html">Terms of Service &rarr;</a>
+</p>
 
 <h2>Why this tool exists</h2>
 
@@ -88,8 +100,17 @@
 <ul>
   <li>Local calculation history (your last 20 calculations, stored only on your device)</li>
   <li>Free tier: 5 calculations per day</li>
-  <li>Pro: one-time unlock for unlimited daily calculations</li>
+  <li>Pro: unlimited daily calculations &mdash; <span class="price">$14.99, one-time payment (not a subscription)</span></li>
 </ul>
+
+<h2>Pricing</h2>
+
+<ul>
+  <li><strong>Free</strong> &mdash; $0. Up to 5 calculations per day, resets daily.</li>
+  <li><strong>Pro</strong> &mdash; <span class="price">$14.99 one-time payment</span> for unlimited daily calculations.</li>
+</ul>
+
+<p><strong>Pro is a one-time purchase, not a subscription.</strong> There is no recurring charge, no auto-renewal, and nothing to cancel. Payment is handled by Creem; you receive a License Key that unlocks Pro in the extension. Refunds are available within 14 days &mdash; see the <a href="TERMS_OF_SERVICE.html">Terms of Service</a>.</p>
 
 <p class="note">A ~&euro;2 per-package customs clearance handling fee is expected to take effect around November 2026 and is called out separately in the results &mdash; it is not yet included in the totals until it's confirmed active.</p>
 
@@ -99,9 +120,10 @@
 
 <h2>Contact</h2>
 
-<p>Questions or support: <a href="mailto:lidingyao44@gmail.com">lidingyao44@gmail.com</a></p>
+<p>Questions, support, or refund requests: <a href="mailto:support@eutariffcalculator.com">support@eutariffcalculator.com</a></p>
 
 <footer>
+  <p><a href="PRIVACY_POLICY.html">Privacy Policy</a> &middot; <a href="TERMS_OF_SERVICE.html">Terms of Service</a> &middot; <a href="mailto:support@eutariffcalculator.com">support@eutariffcalculator.com</a></p>
   <p>This tool provides estimates for reference and planning purposes only. It is not official customs or tax advice, and is not a guarantee of accuracy. Always verify against official sources or consult a qualified customs/tax professional before making business decisions.</p>
 </footer>
 
