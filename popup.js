@@ -1,5 +1,8 @@
 const HISTORY_KEY = 'landedCostHistory';
 const MAX_HISTORY = 20;
+const USAGE_KEY = 'usageData';
+const PRO_KEY = 'isPro';
+const FREE_DAILY_LIMIT = 5;
 
 const COUNTRY_NAMES = {
   DE: '德国 DE',
@@ -64,6 +67,40 @@ function renderHistory(history) {
   });
 }
 
+function getTodayString() {
+  const d = new Date();
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function loadUsageAndPro(callback) {
+  chrome.storage.local.get([USAGE_KEY, PRO_KEY], (data) => {
+    const today = getTodayString();
+    let usage = data[USAGE_KEY];
+    if (!usage || usage.date !== today) {
+      usage = { date: today, count: 0 };
+      chrome.storage.local.set({ [USAGE_KEY]: usage });
+    }
+    callback(usage, !!data[PRO_KEY]);
+  });
+}
+
+function updateUsageDisplay(usage, isPro) {
+  const el = document.getElementById('usageStatus');
+  if (isPro) {
+    el.textContent = 'Pro会员 · 无限次数';
+    el.classList.add('pro');
+  } else {
+    el.classList.remove('pro');
+    const remaining = Math.max(0, FREE_DAILY_LIMIT - usage.count);
+    el.textContent = `今日剩余次数：${remaining}/${FREE_DAILY_LIMIT}`;
+  }
+}
+
+document.getElementById('upgradeBtn').addEventListener('click', function () {
+  alert('Pro付费解锁即将上线，敬请期待！');
+});
+
 document.getElementById('calcBtn').addEventListener('click', function () {
   const declaredValueInput = document.getElementById('declaredValue');
   const categoryCountInput = document.getElementById('categoryCount');
@@ -84,24 +121,42 @@ document.getElementById('calcBtn').addEventListener('click', function () {
 
   errorEl.style.display = 'none';
 
-  const result = calculateLandedCost({ declaredValue, categoryCount, countryCode });
+  const upgradePromptEl = document.getElementById('upgradePrompt');
 
-  document.getElementById('rDuty').textContent = '€' + result.duty.toFixed(2);
-  document.getElementById('rVat').textContent = '€' + result.vat.toFixed(2);
-  document.getElementById('rTotal').textContent = '€' + result.totalLandedCost.toFixed(2);
-  document.getElementById('rPct').textContent = (result.additionalCostPercentage * 100).toFixed(0) + '%';
+  loadUsageAndPro((usage, isPro) => {
+    if (!isPro && usage.count >= FREE_DAILY_LIMIT) {
+      resultEl.style.display = 'none';
+      upgradePromptEl.style.display = 'block';
+      return;
+    }
+    upgradePromptEl.style.display = 'none';
 
-  resultEl.style.display = 'block';
+    const result = calculateLandedCost({ declaredValue, categoryCount, countryCode });
 
-  saveHistoryEntry({
-    declaredValue,
-    categoryCount,
-    countryCode,
-    duty: result.duty,
-    vat: result.vat,
-    total: result.totalLandedCost,
-    pct: result.additionalCostPercentage,
-    timestamp: new Date().toISOString(),
+    document.getElementById('rDuty').textContent = '€' + result.duty.toFixed(2);
+    document.getElementById('rVat').textContent = '€' + result.vat.toFixed(2);
+    document.getElementById('rTotal').textContent = '€' + result.totalLandedCost.toFixed(2);
+    document.getElementById('rPct').textContent = (result.additionalCostPercentage * 100).toFixed(0) + '%';
+
+    resultEl.style.display = 'block';
+
+    saveHistoryEntry({
+      declaredValue,
+      categoryCount,
+      countryCode,
+      duty: result.duty,
+      vat: result.vat,
+      total: result.totalLandedCost,
+      pct: result.additionalCostPercentage,
+      timestamp: new Date().toISOString(),
+    });
+
+    if (!isPro) {
+      const newUsage = { date: usage.date, count: usage.count + 1 };
+      chrome.storage.local.set({ [USAGE_KEY]: newUsage }, () => {
+        updateUsageDisplay(newUsage, isPro);
+      });
+    }
   });
 });
 
@@ -122,3 +177,4 @@ document.getElementById('clearHistoryBtn').addEventListener('click', function ()
 });
 
 loadHistory(renderHistory);
+loadUsageAndPro(updateUsageDisplay);
