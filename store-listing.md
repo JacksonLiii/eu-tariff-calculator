@@ -40,6 +40,7 @@ Disclaimer: This tool provides estimates for planning purposes only. It is not o
 
 ## Notes for whoever publishes this
 
+- Privacy policy URL for the Chrome Web Store submission form: https://jacksonliii.github.io/eu-tariff-calculator/PRIVACY_POLICY.html
 - Uses Chrome's official i18n system (`_locales/en`, `_locales/zh_CN`); the store listing text above is for the English listing. A separate Chinese listing can be translated from `_locales/zh_CN/messages.json` later if a zh-CN store page is ever published.
 - Keep the "estimates only / not official advice" framing intact in any future edits — required by the disclaimer commitment in `SPEC.md` and by Chrome Web Store policy against absolute/guaranteed-accuracy claims.
 - Update the "~€2 clearance fee ... expected ... November 2026" line once that fee actually goes into effect.
