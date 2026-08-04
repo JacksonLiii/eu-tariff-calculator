@@ -242,13 +242,8 @@
   <input type="number" id="categoryCount" min="1" step="1" value="1" />
 
   <label for="countryCode" data-i18n="countryCodeLabel"></label>
-  <select id="countryCode">
-    <option value="DE">德国 DE（VAT 19%）</option>
-    <option value="FR">法国 FR（VAT 20%）</option>
-    <option value="IT">意大利 IT（VAT 22%）</option>
-    <option value="ES">西班牙 ES（VAT 21%）</option>
-    <option value="NL">荷兰 NL（VAT 21%）</option>
-  </select>
+  <!-- options are built in popup.js from VAT_RATES + the localized country names -->
+  <select id="countryCode"></select>
 
   <button id="calcBtn" data-i18n="calcButton"></button>
 

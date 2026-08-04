@@ -7,16 +7,36 @@ const FREE_DAILY_LIMIT = 5;
 const UPGRADE_URL = 'https://creem.io/test/checkout/prod_5BcHyQM5AZoMlOqSeVaR1r';
 const LICENSE_WORKER_URL = 'https://creem-license-proxy.lidingyao44.workers.dev';
 
-const COUNTRY_NAMES = {
-  DE: '德国 DE',
-  FR: '法国 FR',
-  IT: '意大利 IT',
-  ES: '西班牙 ES',
-  NL: '荷兰 NL',
-};
+// Dropdown order; VAT rates for each of these come from VAT_RATES in calculator.js.
+const COUNTRY_CODES = ['DE', 'FR', 'IT', 'ES', 'NL'];
+
+function getCountryName(countryCode) {
+  return chrome.i18n.getMessage('country' + countryCode) || countryCode;
+}
+
+function populateCountryOptions() {
+  const select = document.getElementById('countryCode');
+  const previous = select.value;
+  select.innerHTML = '';
+
+  COUNTRY_CODES.forEach((code) => {
+    const option = document.createElement('option');
+    option.value = code;
+    option.textContent = chrome.i18n.getMessage('countryOptionFormat', [
+      getCountryName(code),
+      String(Math.round(VAT_RATES[code] * 100)),
+    ]);
+    select.appendChild(option);
+  });
+
+  if (previous) {
+    select.value = previous;
+  }
+}
 
 function applyI18n() {
   document.title = chrome.i18n.getMessage('appName');
+  populateCountryOptions();
 
   document.querySelectorAll('[data-i18n]').forEach((el) => {
     const key = el.getAttribute('data-i18n');
@@ -75,7 +95,7 @@ function renderHistory(history) {
 
     const main = document.createElement('span');
     main.className = 'historyMain';
-    const countryLabel = COUNTRY_NAMES[entry.countryCode] || entry.countryCode;
+    const countryLabel = getCountryName(entry.countryCode);
     main.textContent = chrome.i18n.getMessage('historyItemFormat', [
       countryLabel,
       String(entry.declaredValue),

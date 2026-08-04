@@ -20,6 +20,28 @@
   "countryCodeLabel": {
     "message": "目的地国家"
   },
+  "countryDE": {
+    "message": "德国 DE"
+  },
+  "countryFR": {
+    "message": "法国 FR"
+  },
+  "countryIT": {
+    "message": "意大利 IT"
+  },
+  "countryES": {
+    "message": "西班牙 ES"
+  },
+  "countryNL": {
+    "message": "荷兰 NL"
+  },
+  "countryOptionFormat": {
+    "message": "$COUNTRY$（VAT $RATE$%）",
+    "placeholders": {
+      "country": { "content": "$1" },
+      "rate": { "content": "$2" }
+    }
+  },
   "calcButton": {
     "message": "计算"
   },

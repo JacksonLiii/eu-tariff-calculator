@@ -20,6 +20,28 @@
   "countryCodeLabel": {
     "message": "Destination country"
   },
+  "countryDE": {
+    "message": "Germany DE"
+  },
+  "countryFR": {
+    "message": "France FR"
+  },
+  "countryIT": {
+    "message": "Italy IT"
+  },
+  "countryES": {
+    "message": "Spain ES"
+  },
+  "countryNL": {
+    "message": "Netherlands NL"
+  },
+  "countryOptionFormat": {
+    "message": "$COUNTRY$ (VAT $RATE$%)",
+    "placeholders": {
+      "country": { "content": "$1" },
+      "rate": { "content": "$2" }
+    }
+  },
   "calcButton": {
     "message": "Calculate"
   },
