@@ -4,7 +4,9 @@
   "private": true,
   "description": "EU关税落地成本计算器 Chrome插件",
   "scripts": {
-    "test": "node test.js"
+    "test": "node test.js",
+    "build": "pwsh -File build.ps1",
+    "build:strict": "pwsh -File build.ps1 -Strict"
   },
   "dependencies": {
     "puppeteer": "^25.4.0"
