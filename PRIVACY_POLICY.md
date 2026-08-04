@@ -66,4 +66,4 @@ This extension is an estimation tool. The duty, VAT, and total landed cost figur
 
 If you have questions about this privacy policy or how your data is handled, contact us at:
 
-**[your-email@example.com]** *(placeholder — please replace with your real contact email before publishing)*
+**lidingyao44@gmail.com**
