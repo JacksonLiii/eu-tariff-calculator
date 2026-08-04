@@ -31,7 +31,8 @@ No other information (name, email, payment details) is sent as part of this chec
 
 The extension does **not**:
 
-- Collect your name, email address, IP address, or any other personally identifiable information
+- Collect your name, email address, or any other personally identifiable information
+- Read, log, or store your IP address in any code we control (see the note on Cloudflare's infrastructure-level logging in Section 3.2)
 - Use cookies
 - Track your browsing activity, the pages you visit, or your behavior across websites
 - Sell or share your data with any third party for advertising or marketing purposes
@@ -45,7 +46,9 @@ Purchases are handled entirely by Creem, our payment processor. When you choose 
 Please refer to Creem's own privacy policy for how they handle your payment and checkout information: [Creem Privacy Policy — link to be added].
 
 ### 3.2 Cloudflare Workers (license verification)
-We use a Cloudflare Worker as a lightweight relay solely to check whether a License Key you enter is valid with Creem. This service does not store or log your data — it simply forwards the key for a validity check and returns the result.
+We use a Cloudflare Worker as a lightweight relay solely to check whether a License Key you enter is valid with Creem. Our Worker code does not store or log your data — it simply forwards the key for a validity check and returns the result.
+
+Cloudflare is our infrastructure provider, and like any network operator, its edge network may record standard connection metadata (such as IP address) while handling the request, as part of Cloudflare's own security and abuse-prevention systems. This logging happens at Cloudflare's infrastructure level as a normal part of operating their network — it is not something our Worker code actively reads, logs, or stores. For details on how Cloudflare handles this, see [Cloudflare's own privacy policy](https://www.cloudflare.com/privacypolicy/).
 
 ## 4. Data retention and deletion
 
