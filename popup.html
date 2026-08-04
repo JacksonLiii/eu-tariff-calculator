@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8" />
+<title>EU关税落地成本计算器</title>
+<style>
+  body {
+    width: 300px;
+    margin: 0;
+    padding: 12px;
+    font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+    font-size: 13px;
+    color: #1a1a1a;
+  }
+  h1 {
+    font-size: 15px;
+    margin: 0 0 10px;
+  }
+  label {
+    display: block;
+    margin-top: 8px;
+    margin-bottom: 3px;
+    font-weight: 600;
+  }
+  .hint {
+    font-weight: normal;
+    color: #666;
+    font-size: 11px;
+  }
+  input, select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5px 6px;
+    font-size: 13px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  button {
+    width: 100%;
+    margin-top: 12px;
+    padding: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #fff;
+    background: #2563eb;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #1d4ed8;
+  }
+  #error {
+    margin-top: 8px;
+    color: #c0392b;
+    font-size: 12px;
+    display: none;
+  }
+  #result {
+    margin-top: 12px;
+    padding: 10px;
+    background: #f5f7fa;
+    border-radius: 4px;
+    display: none;
+  }
+  #result div {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  #result div:last-child {
+    margin-bottom: 0;
+    padding-top: 4px;
+    border-top: 1px solid #ddd;
+    font-weight: 600;
+  }
+  .footer-note {
+    margin-top: 12px;
+    font-size: 10px;
+    color: #888;
+    line-height: 1.5;
+  }
+  .disclaimer {
+    margin-top: 6px;
+    font-size: 10px;
+    color: #888;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+  <h1>EU关税落地成本计算器</h1>
+
+  <label for="declaredValue">商品申报价值（欧元）</label>
+  <input type="number" id="declaredValue" min="0" step="0.01" placeholder="例如 50" />
+
+  <label for="categoryCount">包裹内不同品类数量 <span class="hint">（默认1，不同商品但同一分类算1个）</span></label>
+  <input type="number" id="categoryCount" min="1" step="1" value="1" />
+
+  <label for="countryCode">目的地国家</label>
+  <select id="countryCode">
+    <option value="DE">德国 DE（VAT 19%）</option>
+    <option value="FR">法国 FR（VAT 20%）</option>
+    <option value="IT">意大利 IT（VAT 22%）</option>
+    <option value="ES">西班牙 ES（VAT 21%）</option>
+    <option value="NL">荷兰 NL（VAT 21%）</option>
+  </select>
+
+  <button id="calcBtn">计算</button>
+
+  <div id="error"></div>
+
+  <div id="result">
+    <div><span>关税</span><span id="rDuty"></span></div>
+    <div><span>VAT</span><span id="rVat"></span></div>
+    <div><span>附加成本占比</span><span id="rPct"></span></div>
+    <div><span>落地总成本</span><span id="rTotal"></span></div>
+  </div>
+
+  <div class="footer-note">
+    清关处理费(~€2/包裹)预计2026年11月上线，暂未计入。数据来源：Council Regulation (EU) 2026/382；最后核实日期：2026-08-04。
+  </div>
+  <div class="disclaimer">仅供参考，非正式关务/税务意见。</div>
+
+  <script src="calculator.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

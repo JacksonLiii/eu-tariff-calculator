@@ -1,0 +1,12 @@
+{
+  "name": "eu-landed-cost-calculator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "EU关税落地成本计算器 Chrome插件",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "dependencies": {
+    "puppeteer": "^25.4.0"
+  }
+}
