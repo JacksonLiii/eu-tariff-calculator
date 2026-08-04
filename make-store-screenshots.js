@@ -19,6 +19,19 @@ const OUT_DIR = path.join(__dirname, 'screenshots');
 const W = 1280;
 const H = 800;
 
+/**
+ * Pro price, as printed on the store screenshot.
+ *
+ * MUST match the price on the LIVE Creem product. It is hardcoded because the
+ * Creem API needs a live API key that isn't available to this script; there is
+ * no programmatic source of truth here. If the live product price changes,
+ * change it here and re-run `node make-store-screenshots.js 4`.
+ *
+ * Cross-check before publishing: the landing page (index.html), the Terms of
+ * Service (section 3), and the Creem live product must all agree with this.
+ */
+const PRO_PRICE = '$14.99';
+
 const today = () => {
   const d = new Date();
   const p = (n) => String(n).padStart(2, '0');
@@ -73,7 +86,7 @@ const shots = [
   },
   {
     file: 'store-4-limit.png',
-    headline: 'Five free calculations a day.\nUnlimited for $14.99.',
+    headline: `Five free calculations a day.\nUnlimited for ${PRO_PRICE}.`,
     sub: 'One-time payment, not a subscription. No recurring charge, nothing to cancel.',
     setup: async (page) => {
       await page.evaluate(
@@ -143,8 +156,23 @@ function compositionHtml({ headline, sub, imgB64, imgW, imgH }) {
 </body></html>`;
 }
 
+// Optional args select a subset, so a single shot can be redone without
+// touching the others: `node make-store-screenshots.js 4` or `... 2 4`.
+// With no args, all five are regenerated.
+const wanted = process.argv.slice(2).filter((a) => /^\d+$/.test(a)).map(Number);
+const selected = wanted.length
+  ? wanted.map((n) => {
+      const s = shots[n - 1];
+      if (!s) throw new Error(`No shot ${n}; valid range is 1-${shots.length}.`);
+      return s;
+    })
+  : shots;
+
 (async () => {
   fs.mkdirSync(OUT_DIR, { recursive: true });
+  if (wanted.length) {
+    console.log(`Regenerating only: ${selected.map((s) => s.file).join(', ')}`);
+  }
 
   // Chrome 151 ignores --load-extension; browser.installExtension() (CDP
   // Extensions.loadUnpacked) is the supported replacement. --no-sandbox is
@@ -179,7 +207,7 @@ function compositionHtml({ headline, sub, imgB64, imgW, imgH }) {
     console.log('dropdown :', dropdown);
     await probe.close();
 
-    for (const shot of shots) {
+    for (const shot of selected) {
       const page = await browser.newPage();
       await page.setViewport({ width: 420, height: 900, deviceScaleFactor: 2 });
 
@@ -227,7 +255,7 @@ function compositionHtml({ headline, sub, imgB64, imgW, imgH }) {
   }
 
   console.log('\nDone. Verifying dimensions...');
-  for (const shot of shots) {
+  for (const shot of selected) {
     const buf = fs.readFileSync(path.join(OUT_DIR, shot.file));
     // PNG IHDR: width at byte 16..19, height at 20..23 (big-endian)
     const w = buf.readUInt32BE(16);
