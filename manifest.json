@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "EU关税落地成本计算器",
+  "name": "__MSG_appName__",
   "version": "0.1.0",
-  "description": "面向跨境独立站/DTC卖家的估算工具：按2026年7月起欧盟新关税规则，快速估算卖到欧盟的关税、VAT与落地总成本。",
+  "description": "__MSG_appDescription__",
+  "default_locale": "en",
   "action": {
     "default_popup": "popup.html"
   },

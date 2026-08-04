@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
-<title>EU关税落地成本计算器</title>
+<title>EU Landed Cost Calculator</title>
 <style>
   body {
     width: 300px;
@@ -183,19 +183,65 @@
   #upgradeBtn:hover {
     background: #96690a;
   }
+  #licenseSection {
+    margin-top: 10px;
+  }
+  #licenseToggle {
+    background: none;
+    color: #888;
+    border: none;
+    padding: 0;
+    margin-top: 0;
+    font-size: 11px;
+    font-weight: normal;
+    text-decoration: underline;
+    cursor: pointer;
+    width: auto;
+  }
+  #licenseToggle:hover {
+    background: none;
+    color: #2563eb;
+  }
+  #licenseBody {
+    display: none;
+    margin-top: 6px;
+  }
+  #licenseKeyInput {
+    font-size: 12px;
+  }
+  #activateBtn {
+    margin-top: 6px;
+    padding: 6px;
+    font-size: 12px;
+  }
+  #activateBtn:disabled {
+    opacity: 0.6;
+    cursor: default;
+  }
+  #licenseMessage {
+    margin-top: 6px;
+    font-size: 11px;
+    display: none;
+  }
+  #licenseMessage.success {
+    color: #1a7f37;
+  }
+  #licenseMessage.error {
+    color: #c0392b;
+  }
 </style>
 </head>
 <body>
-  <h1>EU关税落地成本计算器</h1>
+  <h1 data-i18n="appName"></h1>
   <div id="usageStatus"></div>
 
-  <label for="declaredValue">商品申报价值（欧元）</label>
-  <input type="number" id="declaredValue" min="0" step="0.01" placeholder="例如 50" />
+  <label for="declaredValue" data-i18n="declaredValueLabel"></label>
+  <input type="number" id="declaredValue" min="0" step="0.01" data-i18n-placeholder="declaredValuePlaceholder" />
 
-  <label for="categoryCount">包裹内不同品类数量 <span class="hint">（默认1，不同商品但同一分类算1个）</span></label>
+  <label for="categoryCount"><span data-i18n="categoryCountLabel"></span> <span class="hint" data-i18n="categoryCountHint"></span></label>
   <input type="number" id="categoryCount" min="1" step="1" value="1" />
 
-  <label for="countryCode">目的地国家</label>
+  <label for="countryCode" data-i18n="countryCodeLabel"></label>
   <select id="countryCode">
     <option value="DE">德国 DE（VAT 19%）</option>
     <option value="FR">法国 FR（VAT 20%）</option>
@@ -204,35 +250,42 @@
     <option value="NL">荷兰 NL（VAT 21%）</option>
   </select>
 
-  <button id="calcBtn">计算</button>
+  <button id="calcBtn" data-i18n="calcButton"></button>
 
   <div id="error"></div>
 
   <div id="upgradePrompt">
-    <p>今日免费次数已用完，升级Pro解锁无限次数</p>
-    <button id="upgradeBtn" type="button">升级Pro</button>
+    <p data-i18n="upgradePromptText"></p>
+    <button id="upgradeBtn" type="button" data-i18n="upgradeButton"></button>
   </div>
 
   <div id="result">
-    <div><span>关税</span><span id="rDuty"></span></div>
-    <div><span>VAT</span><span id="rVat"></span></div>
-    <div><span>附加成本占比</span><span id="rPct"></span></div>
-    <div><span>落地总成本</span><span id="rTotal"></span></div>
+    <div><span data-i18n="dutyLabel"></span><span id="rDuty"></span></div>
+    <div><span data-i18n="vatLabel"></span><span id="rVat"></span></div>
+    <div><span data-i18n="pctLabel"></span><span id="rPct"></span></div>
+    <div><span data-i18n="totalLabel"></span><span id="rTotal"></span></div>
   </div>
 
-  <div class="footer-note">
-    清关处理费(~€2/包裹)预计2026年11月上线，暂未计入。数据来源：Council Regulation (EU) 2026/382；最后核实日期：2026-08-04。
+  <div class="footer-note" data-i18n="footerNote"></div>
+  <div class="disclaimer" data-i18n="disclaimer"></div>
+
+  <div id="licenseSection">
+    <button id="licenseToggle" type="button" data-i18n="licenseToggleText"></button>
+    <div id="licenseBody">
+      <input type="text" id="licenseKeyInput" data-i18n-placeholder="licenseKeyPlaceholder" />
+      <button id="activateBtn" type="button" data-i18n="activateButton"></button>
+      <div id="licenseMessage"></div>
+    </div>
   </div>
-  <div class="disclaimer">仅供参考，非正式关务/税务意见。</div>
 
   <div id="historySection">
     <button id="historyToggle" type="button">
-      <span>历史记录</span>
+      <span data-i18n="historyToggleText"></span>
       <span id="historyToggleIcon">▸</span>
     </button>
     <div id="historyBody">
       <div id="historyList"></div>
-      <button id="clearHistoryBtn" type="button">清空历史</button>
+      <button id="clearHistoryBtn" type="button" data-i18n="clearHistoryButton"></button>
     </div>
   </div>
 

@@ -2,7 +2,10 @@ const HISTORY_KEY = 'landedCostHistory';
 const MAX_HISTORY = 20;
 const USAGE_KEY = 'usageData';
 const PRO_KEY = 'isPro';
+const LICENSE_KEY_STORAGE = 'licenseKey';
 const FREE_DAILY_LIMIT = 5;
+const UPGRADE_URL = 'https://creem.io/test/checkout/prod_5BcHyQM5AZoMlOqSeVaR1r';
+const LICENSE_WORKER_URL = 'https://creem-license-proxy.lidingyao44.workers.dev';
 
 const COUNTRY_NAMES = {
   DE: '德国 DE',
@@ -11,6 +14,20 @@ const COUNTRY_NAMES = {
   ES: '西班牙 ES',
   NL: '荷兰 NL',
 };
+
+function applyI18n() {
+  document.title = chrome.i18n.getMessage('appName');
+
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-i18n');
+    el.textContent = chrome.i18n.getMessage(key);
+  });
+
+  document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = chrome.i18n.getMessage(key);
+  });
+}
 
 function loadHistory(callback) {
   chrome.storage.local.get([HISTORY_KEY], (data) => {
@@ -43,7 +60,7 @@ function renderHistory(history) {
   if (!history || history.length === 0) {
     const empty = document.createElement('div');
     empty.className = 'historyEmpty';
-    empty.textContent = '暂无历史记录';
+    empty.textContent = chrome.i18n.getMessage('historyEmpty');
     listEl.appendChild(empty);
     return;
   }
@@ -59,7 +76,11 @@ function renderHistory(history) {
     const main = document.createElement('span');
     main.className = 'historyMain';
     const countryLabel = COUNTRY_NAMES[entry.countryCode] || entry.countryCode;
-    main.textContent = `${countryLabel} · €${entry.declaredValue} · 总€${entry.total.toFixed(2)}`;
+    main.textContent = chrome.i18n.getMessage('historyItemFormat', [
+      countryLabel,
+      String(entry.declaredValue),
+      entry.total.toFixed(2),
+    ]);
 
     item.appendChild(time);
     item.appendChild(main);
@@ -88,17 +109,71 @@ function loadUsageAndPro(callback) {
 function updateUsageDisplay(usage, isPro) {
   const el = document.getElementById('usageStatus');
   if (isPro) {
-    el.textContent = 'Pro会员 · 无限次数';
+    el.textContent = chrome.i18n.getMessage('proStatusText');
     el.classList.add('pro');
   } else {
     el.classList.remove('pro');
     const remaining = Math.max(0, FREE_DAILY_LIMIT - usage.count);
-    el.textContent = `今日剩余次数：${remaining}/${FREE_DAILY_LIMIT}`;
+    el.textContent = chrome.i18n.getMessage('remainingUsageText', [String(remaining), String(FREE_DAILY_LIMIT)]);
   }
 }
 
 document.getElementById('upgradeBtn').addEventListener('click', function () {
-  alert('Pro付费解锁即将上线，敬请期待！');
+  chrome.tabs.create({ url: UPGRADE_URL });
+});
+
+document.getElementById('licenseToggle').addEventListener('click', function () {
+  const body = document.getElementById('licenseBody');
+  body.style.display = body.style.display === 'block' ? 'none' : 'block';
+});
+
+document.getElementById('activateBtn').addEventListener('click', function () {
+  const input = document.getElementById('licenseKeyInput');
+  const messageEl = document.getElementById('licenseMessage');
+  const btn = document.getElementById('activateBtn');
+  const licenseKey = input.value.trim();
+
+  if (!licenseKey) {
+    messageEl.className = 'error';
+    messageEl.textContent = chrome.i18n.getMessage('errorEmptyLicenseKey');
+    messageEl.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = chrome.i18n.getMessage('activateButtonLoading');
+  messageEl.style.display = 'none';
+
+  fetch(LICENSE_WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ licenseKey }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data && data.valid) {
+        chrome.storage.local.set({ [PRO_KEY]: true, [LICENSE_KEY_STORAGE]: licenseKey }, () => {
+          messageEl.className = 'success';
+          messageEl.textContent = chrome.i18n.getMessage('licenseActivateSuccess');
+          messageEl.style.display = 'block';
+          document.getElementById('upgradePrompt').style.display = 'none';
+          loadUsageAndPro(updateUsageDisplay);
+        });
+      } else {
+        messageEl.className = 'error';
+        messageEl.textContent = chrome.i18n.getMessage('licenseActivateError');
+        messageEl.style.display = 'block';
+      }
+    })
+    .catch(() => {
+      messageEl.className = 'error';
+      messageEl.textContent = chrome.i18n.getMessage('licenseActivateError');
+      messageEl.style.display = 'block';
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.textContent = chrome.i18n.getMessage('activateButton');
+    });
 });
 
 document.getElementById('calcBtn').addEventListener('click', function () {
@@ -113,7 +188,7 @@ document.getElementById('calcBtn').addEventListener('click', function () {
   const resultEl = document.getElementById('result');
 
   if (!declaredValue || declaredValue <= 0) {
-    errorEl.textContent = '请输入大于0的申报价值';
+    errorEl.textContent = chrome.i18n.getMessage('errorInvalidValue');
     errorEl.style.display = 'block';
     resultEl.style.display = 'none';
     return;
@@ -169,12 +244,13 @@ document.getElementById('historyToggle').addEventListener('click', function () {
 });
 
 document.getElementById('clearHistoryBtn').addEventListener('click', function () {
-  if (confirm('确定要清空所有历史记录吗？此操作不可撤销。')) {
+  if (confirm(chrome.i18n.getMessage('confirmClearHistory'))) {
     chrome.storage.local.set({ [HISTORY_KEY]: [] }, () => {
       renderHistory([]);
     });
   }
 });
 
+applyI18n();
 loadHistory(renderHistory);
 loadUsageAndPro(updateUsageDisplay);

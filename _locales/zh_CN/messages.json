@@ -1,0 +1,104 @@
+{
+  "appName": {
+    "message": "EU关税落地成本计算器"
+  },
+  "appDescription": {
+    "message": "面向跨境独立站/DTC卖家的估算工具：按2026年7月起欧盟新关税规则，快速估算卖到欧盟的关税、VAT与落地总成本。"
+  },
+  "declaredValueLabel": {
+    "message": "商品申报价值（欧元）"
+  },
+  "declaredValuePlaceholder": {
+    "message": "例如 50"
+  },
+  "categoryCountLabel": {
+    "message": "包裹内不同品类数量"
+  },
+  "categoryCountHint": {
+    "message": "（默认1，不同商品但同一分类算1个）"
+  },
+  "countryCodeLabel": {
+    "message": "目的地国家"
+  },
+  "calcButton": {
+    "message": "计算"
+  },
+  "errorInvalidValue": {
+    "message": "请输入大于0的申报价值"
+  },
+  "upgradePromptText": {
+    "message": "今日免费次数已用完，升级Pro解锁无限次数"
+  },
+  "upgradeButton": {
+    "message": "升级Pro"
+  },
+  "dutyLabel": {
+    "message": "关税"
+  },
+  "vatLabel": {
+    "message": "VAT"
+  },
+  "pctLabel": {
+    "message": "附加成本占比"
+  },
+  "totalLabel": {
+    "message": "落地总成本"
+  },
+  "footerNote": {
+    "message": "清关处理费(~€2/包裹)预计2026年11月上线，暂未计入。数据来源：Council Regulation (EU) 2026/382；最后核实日期：2026-08-04。"
+  },
+  "disclaimer": {
+    "message": "仅供参考，非正式关务/税务意见。"
+  },
+  "licenseToggleText": {
+    "message": "已购买？输入License Key激活"
+  },
+  "licenseKeyPlaceholder": {
+    "message": "粘贴你的 License Key"
+  },
+  "activateButton": {
+    "message": "激活"
+  },
+  "activateButtonLoading": {
+    "message": "激活中..."
+  },
+  "errorEmptyLicenseKey": {
+    "message": "请输入 License Key"
+  },
+  "licenseActivateSuccess": {
+    "message": "激活成功，已解锁Pro"
+  },
+  "licenseActivateError": {
+    "message": "License Key无效或已被使用，请检查后重试"
+  },
+  "historyToggleText": {
+    "message": "历史记录"
+  },
+  "clearHistoryButton": {
+    "message": "清空历史"
+  },
+  "historyEmpty": {
+    "message": "暂无历史记录"
+  },
+  "confirmClearHistory": {
+    "message": "确定要清空所有历史记录吗？此操作不可撤销。"
+  },
+  "proStatusText": {
+    "message": "Pro会员 · 无限次数"
+  },
+  "remainingUsageText": {
+    "message": "今日剩余次数：$REMAINING$/$LIMIT$",
+    "placeholders": {
+      "remaining": { "content": "$1" },
+      "limit": { "content": "$2" }
+    }
+  },
+  "historyItemFormat": {
+    "message": "$COUNTRY$ · €$VALUE$ · 总€$TOTAL$",
+    "placeholders": {
+      "country": { "content": "$1" },
+      "value": { "content": "$2" },
+      "total": { "content": "$3" }
+    }
+  }
+}

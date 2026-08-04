@@ -1,0 +1,104 @@
+{
+  "appName": {
+    "message": "EU Landed Cost Calculator"
+  },
+  "appDescription": {
+    "message": "An estimation tool for cross-border/DTC sellers: quickly estimate duty, VAT, and total landed cost for shipments to the EU under the new tariff rules effective July 2026."
+  },
+  "declaredValueLabel": {
+    "message": "Declared value (EUR)"
+  },
+  "declaredValuePlaceholder": {
+    "message": "e.g. 50"
+  },
+  "categoryCountLabel": {
+    "message": "Number of distinct HS6 categories in the package"
+  },
+  "categoryCountHint": {
+    "message": "(default 1; different products in the same category count as 1)"
+  },
+  "countryCodeLabel": {
+    "message": "Destination country"
+  },
+  "calcButton": {
+    "message": "Calculate"
+  },
+  "errorInvalidValue": {
+    "message": "Please enter a declared value greater than 0"
+  },
+  "upgradePromptText": {
+    "message": "You've used all your free calculations for today. Upgrade to Pro for unlimited use."
+  },
+  "upgradeButton": {
+    "message": "Upgrade to Pro"
+  },
+  "dutyLabel": {
+    "message": "Duty"
+  },
+  "vatLabel": {
+    "message": "VAT"
+  },
+  "pctLabel": {
+    "message": "Additional cost %"
+  },
+  "totalLabel": {
+    "message": "Total landed cost"
+  },
+  "footerNote": {
+    "message": "A customs clearance handling fee (~€2/package) is expected to take effect in November 2026 and is not yet included. Data source: Council Regulation (EU) 2026/382. Last verified: 2026-08-04."
+  },
+  "disclaimer": {
+    "message": "For reference only. This is not official customs or tax advice."
+  },
+  "licenseToggleText": {
+    "message": "Already purchased? Activate with a License Key"
+  },
+  "licenseKeyPlaceholder": {
+    "message": "Paste your License Key"
+  },
+  "activateButton": {
+    "message": "Activate"
+  },
+  "activateButtonLoading": {
+    "message": "Activating..."
+  },
+  "errorEmptyLicenseKey": {
+    "message": "Please enter a License Key"
+  },
+  "licenseActivateSuccess": {
+    "message": "Activated! Pro is now unlocked."
+  },
+  "licenseActivateError": {
+    "message": "Invalid or already-used License Key. Please check and try again."
+  },
+  "historyToggleText": {
+    "message": "History"
+  },
+  "clearHistoryButton": {
+    "message": "Clear History"
+  },
+  "historyEmpty": {
+    "message": "No history yet"
+  },
+  "confirmClearHistory": {
+    "message": "Clear all history? This cannot be undone."
+  },
+  "proStatusText": {
+    "message": "Pro Member · Unlimited"
+  },
+  "remainingUsageText": {
+    "message": "Remaining today: $REMAINING$/$LIMIT$",
+    "placeholders": {
+      "remaining": { "content": "$1" },
+      "limit": { "content": "$2" }
+    }
+  },
+  "historyItemFormat": {
+    "message": "$COUNTRY$ · €$VALUE$ · Total €$TOTAL$",
+    "placeholders": {
+      "country": { "content": "$1" },
+      "value": { "content": "$2" },
+      "total": { "content": "$3" }
+    }
+  }
+}
