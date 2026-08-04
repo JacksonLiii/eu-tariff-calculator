@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer');
+const fs = require('fs');
 
 const extensionPath = __dirname;
 const VALID_LICENSE_KEY = process.env.TEST_LICENSE_KEY || 'REPLACE_WITH_A_VALID_TEST_LICENSE_KEY';
@@ -131,8 +132,18 @@ const VALID_LICENSE_KEY = process.env.TEST_LICENSE_KEY || 'REPLACE_WITH_A_VALID_
     await new Promise((r) => setTimeout(r, 300));
     console.log('确认框文案:', dialogMessage);
 
-    await page.screenshot({ path: 'popup-english-default.png' });
-    console.log('\n截图已保存: popup-english-default.png');
+    // NEVER screenshot while a real License Key is on screen — a key entered above
+    // was previously baked into a committed PNG. Clear the field and the activation
+    // message first, and write to screenshots/ (gitignored) rather than the repo root.
+    await page.evaluate(() => {
+      document.getElementById('licenseKeyInput').value = '';
+      const msg = document.getElementById('licenseMessage');
+      msg.textContent = '';
+      msg.style.display = 'none';
+    });
+    fs.mkdirSync('screenshots', { recursive: true });
+    await page.screenshot({ path: 'screenshots/popup-english-default.png' });
+    console.log('\n截图已保存: screenshots/popup-english-default.png');
   } finally {
     await browser.close();
   }

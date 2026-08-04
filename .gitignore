@@ -1,1 +1,5 @@
 node_modules/
+
+# Test/dev screenshots. Never commit these — a real License Key was once baked
+# into popup-english-default.png and pushed to the public repo.
+screenshots/

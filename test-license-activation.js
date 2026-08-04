@@ -40,9 +40,14 @@ const INVALID_LICENSE_KEY = 'FAKE1-FAKE2-FAKE3-FAKE4-FAKE5';
     }
 
     async function readStorage(page) {
-      return page.evaluate(
+      const data = await page.evaluate(
         () => new Promise((resolve) => chrome.storage.local.get(['isPro', 'licenseKey'], resolve))
       );
+      // Mask the key so pasting this log into an issue/PR doesn't leak it.
+      return {
+        isPro: data.isPro,
+        licenseKey: data.licenseKey ? `${String(data.licenseKey).slice(0, 5)}…(masked)` : data.licenseKey,
+      };
     }
 
     // Test A: invalid license key
