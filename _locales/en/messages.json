@@ -1,9 +1,9 @@
 {
   "appName": {
-    "message": "EU Landed Cost Calculator"
+    "message": "EU Tariff & Landed Cost Calculator"
   },
   "appDescription": {
-    "message": "An estimation tool for cross-border/DTC sellers: quickly estimate duty, VAT, and total landed cost for shipments to the EU under the new tariff rules effective July 2026."
+    "message": "Estimate EU duty, VAT, and total landed cost under the new tariff rules effective July 2026. Built for cross-border and DTC sellers."
   },
   "declaredValueLabel": {
     "message": "Declared value (EUR)"
