@@ -9,7 +9,7 @@
 
 ## 一句话状态
 
-Chrome 插件功能完整、文案齐备、上传包和商店截图都能一键生成，**但还不能上架**——付款链接仍指向 Creem 的 test 模式，真实用户付不了钱。这一项要等 Creem 商户审核通过后才能换。**截至 2026-08-05 交接时，Creem 商户审核仍在进行中，仍卡在 live payment approval 这一步**，没有新进展，下一台机器上先去 Creem 后台确认审核状态。
+Chrome 插件功能完整、文案齐备、上传包和商店截图都能一键生成。**Creem 商户审核已通过**，live 产品已创建，`popup.js` 和落地页的付款链接都已切到 live checkout。**但仍不能上架**——Cloudflare Worker 还在用 test API 验 license，此时真实用户付得了钱却激活不了，详见下面 P0。改完 Worker 后还需核实 live 产品价格确为 $14.99。
 
 ---
 
@@ -99,16 +99,17 @@ node make-store-screenshots.js 4       # 只重截第 4 张
 
 ### P0 — 阻断上架
 
-**`popup.js:7` 的 `UPGRADE_URL` 仍指向 Creem test 模式 checkout。** 真实用户点「升级 Pro」会进测试收单页，收不到钱。
+~~`popup.js:7` 的 `UPGRADE_URL` 仍指向 Creem test 模式 checkout。~~ **2026-08-05 已解决：** Creem 商户审核通过，live 产品 `prod_3lfYFVrPwHP7SXDvueO2gZ` 已创建，`popup.js:7` 与落地页 Pricing 区块的购买按钮都已指向 live checkout `https://www.creem.io/payment/prod_3lfYFVrPwHP7SXDvueO2gZ`。`npm run build:strict` 的 test-URL 预检现在能过。
 
-要等 Creem 商户审核通过后，从 live 后台取**新的** product id —— test 和 live 的产品是两套独立的，不能只把 URL 里的 `/test/` 删掉。`npm run build:strict` 目前会因为这一项拒绝出包，所以不会手滑传错。
+**新的 P0：`popup.js` 已走 live，但 Worker 还在 test。** 这正是原先要求「两处必须同批改」的那个故障组合——真实用户能付款成功，但 license 激活会**静默失败**。必须先按下面「需要在仓库外完成」第 3 条把 Worker 改掉，才能上架、才能把落地页的购买按钮公开出去。
 
 ### 需要在仓库外完成
 
 1. **吊销那个泄露的 test 模式 License Key**（值见 Creem 后台，本文档不记录）。它曾以像素形式出现在一张已提交的截图里。历史已用 `git filter-branch` 重写并 force push，本地和任何新 clone 都拿不到了，**但 GitHub 服务端仍在按 SHA 提供旧对象**（实测确认过），force push 不删除远端对象。所以吊销是唯一彻底的解法。
 2. **确认 live 产品价格是 $14.99。** 之前 test 产品显示的是 $9.90。这个价格已经印在落地页、服务条款第 3 节、以及第 4 张商店截图**图片里**。不一致的话截图要重出：改 `make-store-screenshots.js` 顶部的 `PRO_PRICE` 常量，然后 `node make-store-screenshots.js 4`。
-3. ~~确认 Cloudflare Worker 用的是 live API key。~~ **2026-08-05 已核实：仍是 test。** 直接看了 Worker 部署代码，第 33 行请求的是 `https://test-api.creem.io/v1/licenses/activate`，不是 `api.creem.io`。目前阶段这是预期状态（还没走 live），**先不改**，等 Creem 审核通过、`popup.js` 的 `UPGRADE_URL` 换成 live checkout 时一并把这行也换成 live API，两处必须同批改——只改一处会导致 popup.js 指向 live checkout 但 Worker 还拿 test key 验 license，症状是**所有真实付费用户静默激活失败**。
-4. **给 `support@` 发一封测试邮件。** DNS 层面没问题，但证明不了 Cloudflare 侧的转发目标地址已验证通过——未验证的目标会导致邮件被静默丢弃。**截至 2026-08-05 交接时仍未做**，DNS/MX/SPF 都配置好了，但没有做过真实收件测试，下一台机器上先补这个。
+3. **⚠️ 待办：`worker.js` 第 33 行仍需手动去 Cloudflare 后台把 `test-api.creem.io` 改成 `api.creem.io`，这一步无法通过 git 同步完成。** Worker 源码只存在于 Cloudflare 在线编辑器里，本地仓库没有这个文件，改 popup.js 不会带上它。背景见下条。
+4. ~~确认 Cloudflare Worker 用的是 live API key。~~ **2026-08-05 已核实：仍是 test。** 直接看了 Worker 部署代码，第 33 行请求的是 `https://test-api.creem.io/v1/licenses/activate`，不是 `api.creem.io`。当时这是预期状态（还没走 live），要求与 `popup.js` 的 `UPGRADE_URL` 同批切换。**`UPGRADE_URL` 已于 2026-08-05 切到 live，Worker 这一侧还没跟上，所以「同批」已被打破**——现在正处于「popup.js 指向 live checkout、Worker 仍拿 test key 验 license」的状态，症状是**所有真实付费用户静默激活失败**。这就是上面第 3 条必须尽快做掉的原因。
+5. **给 `support@` 发一封测试邮件。** DNS 层面没问题，但证明不了 Cloudflare 侧的转发目标地址已验证通过——未验证的目标会导致邮件被静默丢弃。**截至 2026-08-05 交接时仍未做**，DNS/MX/SPF 都配置好了，但没有做过真实收件测试，下一台机器上先补这个。
 
 ### 技术债
 

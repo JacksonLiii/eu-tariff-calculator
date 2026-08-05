@@ -4,7 +4,7 @@ const USAGE_KEY = 'usageData';
 const PRO_KEY = 'isPro';
 const LICENSE_KEY_STORAGE = 'licenseKey';
 const FREE_DAILY_LIMIT = 5;
-const UPGRADE_URL = 'https://creem.io/test/checkout/prod_5BcHyQM5AZoMlOqSeVaR1r';
+const UPGRADE_URL = 'https://www.creem.io/payment/prod_3lfYFVrPwHP7SXDvueO2gZ';
 const LICENSE_WORKER_URL = 'https://creem-license-proxy.lidingyao44.workers.dev';
 
 // Dropdown order; VAT rates for each of these come from VAT_RATES in calculator.js.

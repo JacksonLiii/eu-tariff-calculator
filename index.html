@@ -52,6 +52,23 @@
     font-weight: 600;
     color: #1f2328;
   }
+  /* Primary call to action. Same box metrics as .doc-link so the two button
+     styles line up; filled in the site's link blue to outrank the doc links. */
+  .cta {
+    display: inline-block;
+    margin: .5rem 0 .25rem;
+    padding: .6em 1.2em;
+    border: 1px solid #0969da;
+    border-radius: 6px;
+    background: #0969da;
+    color: #fff;
+    font-weight: 600;
+  }
+  .cta:hover {
+    background: #0860ca;
+    border-color: #0860ca;
+    text-decoration: none;
+  }
   .note {
     padding: .75rem 1rem;
     border-left: 4px solid #d1d9e0;
@@ -107,7 +124,8 @@
 
 <ul>
   <li><strong>Free</strong> &mdash; $0. Up to 5 calculations per day, resets daily.</li>
-  <li><strong>Pro</strong> &mdash; <span class="price">$14.99 one-time payment</span> for unlimited daily calculations.</li>
+  <li><strong>Pro</strong> &mdash; <span class="price">$14.99 one-time payment</span> for unlimited daily calculations.<br>
+    <a class="cta" href="https://www.creem.io/payment/prod_3lfYFVrPwHP7SXDvueO2gZ" target="_blank" rel="noopener">Get Pro &mdash; $14.99</a></li>
 </ul>
 
 <p><strong>Pro is a one-time purchase, not a subscription.</strong> There is no recurring charge, no auto-renewal, and nothing to cancel. Payment is handled by Creem; you receive a License Key that unlocks Pro in the extension. Refunds are available within 14 days &mdash; see the <a href="TERMS_OF_SERVICE.html">Terms of Service</a>.</p>
