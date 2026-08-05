@@ -6,3 +6,9 @@ screenshots/
 
 # Build output (the Chrome Web Store upload ZIP)
 dist/
+
+# Personal identity / payment account details for the Chrome Web Store and
+# Google Payments accounts. This repo is public — real name, address, email
+# and payments profile IDs must never enter its history. HANDOFF.md carries
+# only a redacted summary that points here.
+ACCOUNT-PRIVATE.md
