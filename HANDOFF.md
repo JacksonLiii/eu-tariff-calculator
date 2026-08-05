@@ -9,7 +9,7 @@
 
 ## 一句话状态
 
-Chrome 插件功能完整、文案齐备、上传包和商店截图都能一键生成。**Creem 商户审核已通过，付费链路已全线切到 live**：`popup.js` 与落地页购买按钮指向 live checkout，Cloudflare Worker 也已改用 `api.creem.io` 验 license，两侧一致。**P0 阻塞项已清空。** 上架前剩余事项：吊销那个泄露的 test License Key、核实 live 产品价格确为 $14.99（见下面「需要在仓库外完成」1、2 条）。
+Chrome 插件功能完整、文案齐备、上传包和商店截图都能一键生成。**Creem 商户审核已通过，付费链路已全线切到 live**：`popup.js` 与落地页购买按钮指向 live checkout，Cloudflare Worker 也已改用 `api.creem.io` 验 license，两侧一致。**P0 阻塞项已清空**，泄露的 test key 已吊销、live 价格已核实为 $14.99。结账后的感谢页 `thank-you.html` 已上线，Creem 的 Return URL 也已指向它。上架前只剩 `support@` 收件测试和一笔真实支付的端到端验证（见下面「需要在仓库外完成」）。
 
 ---
 
@@ -103,15 +103,17 @@ node make-store-screenshots.js 4       # 只重截第 4 张
 
 ~~新的 P0：`popup.js` 已走 live，但 Worker 还在 test。~~ **2026-08-05 已解决：** Worker 第 33 行已改为 `https://api.creem.io/v1/licenses/activate`，版本状态 Active、确认已部署生效。checkout 与 license 验证两侧现已都在 live，「同批切换」完成。
 
-**目前 P0 已清空。** 上架前仍需完成下面「需要在仓库外完成」的第 1、2 条（吊销泄露的 test key、核实 live 价格）。
+**目前 P0 已清空，「需要在仓库外完成」的第 1-4、6 条也都已完成。** 上架前只剩两件事：`support@` 收件测试（第 5 条），以及走一笔真实小额支付把「付款 → 跳转感谢页 → 收邮件 → 激活」整条链路跑通。后者尤其重要——Worker 刚换 live key，而它把上游认证错误和「key 无效」折叠成同一个 `valid:false`，**从外部打接口分辨不出来，只有真实付一笔才能验证**。
 
 ### 需要在仓库外完成
 
-1. **吊销那个泄露的 test 模式 License Key**（值见 Creem 后台，本文档不记录）。它曾以像素形式出现在一张已提交的截图里。历史已用 `git filter-branch` 重写并 force push，本地和任何新 clone 都拿不到了，**但 GitHub 服务端仍在按 SHA 提供旧对象**（实测确认过），force push 不删除远端对象。所以吊销是唯一彻底的解法。
-2. **确认 live 产品价格是 $14.99。** 之前 test 产品显示的是 $9.90。这个价格已经印在落地页、服务条款第 3 节、以及第 4 张商店截图**图片里**。不一致的话截图要重出：改 `make-store-screenshots.js` 顶部的 `PRO_PRICE` 常量，然后 `node make-store-screenshots.js 4`。
+1. ~~吊销那个泄露的 test 模式 License Key。~~ **2026-08-05 已在 Creem 后台吊销。** 留下这条教训：它曾以像素形式出现在一张已提交的截图里；历史虽已用 `git filter-branch` 重写并 force push，本地和任何新 clone 都拿不到了，**但 GitHub 服务端仍在按 SHA 提供旧对象**（实测确认过）——**force push 不删除远端对象，所以凭据一旦进过公开仓库，重写历史不算数，吊销才是唯一彻底的解法。**
+2. ~~确认 live 产品价格是 $14.99。~~ **2026-08-05 已在 Creem 后台核实：确为 $14.99**，与落地页、服务条款第 3 节、第 4 张商店截图三处印着的价格一致，无需重出截图。今后若改价，这三处都要跟着改，其中截图要改 `make-store-screenshots.js` 顶部的 `PRO_PRICE` 常量再 `node make-store-screenshots.js 4`——**价格是印死在截图像素里的，光改文案不够。**
 3. ~~`worker.js` 第 33 行需手动去 Cloudflare 后台把 `test-api.creem.io` 改成 `api.creem.io`。~~ **2026-08-05 已完成并部署（版本 Active）。** 记一笔以备后来者：Worker 源码不在 git 里，只存在于 Cloudflare 在线编辑器，**任何涉及它的改动都无法随 `git push` 同步，必须手动改并点 Deploy**。今后再切环境（如回滚到 test）同样要手动来。
 4. ~~确认 Cloudflare Worker 用的是 live API key。~~ **2026-08-05 已完成。** 演进过程：交接时核实为 test（当时是预期状态），要求与 `popup.js` 的 `UPGRADE_URL` 同批切换；同日 `UPGRADE_URL` 切 live 后 Worker 短暂滞后，随后 Worker 也已切到 `api.creem.io` 并部署，两侧恢复一致。**这条的教训值得留着：只改一侧会导致 popup.js 指向 live checkout 但 Worker 仍拿 test key 验 license，症状是所有真实付费用户静默激活失败，且由于 Worker 把上游认证错误和「key 无效」折叠成同一个 `valid:false`，从外部完全看不出区别。**
 5. **给 `support@` 发一封测试邮件。** DNS 层面没问题，但证明不了 Cloudflare 侧的转发目标地址已验证通过——未验证的目标会导致邮件被静默丢弃。**截至 2026-08-05 交接时仍未做**，DNS/MX/SPF 都配置好了，但没有做过真实收件测试，下一台机器上先补这个。
+6. ~~把 Creem 产品的 Return URL 改成 `https://eutariffcalculator.com/thank-you.html`。~~ **2026-08-05 已改（据操作者确认，未经自动化验证）。** 位置记下来备查：Creem 后台 Products → live 产品 `prod_3lfYFVrPwHP7SXDvueO2gZ` → Edit → Return URL（有的版本叫 Success URL / Redirect URL）。原值是站点首页——落回首页的用户拿不到激活引导，多半会直接来邮件问「key 在哪」。**这一项的实际生效与否，会在第 7 条的真实支付验证里自然暴露出来。**
+7. **走一笔真实小额支付做端到端验证**：付款 → 跳转感谢页 → 收到 License Key 邮件 → 在插件里激活成功。Worker 刚换 live key，**这是唯一能验证它真的可用的方式**——它把上游认证错误和「key 无效」折叠成同一个 `valid:false`，从外部打接口分辨不出区别（详见第 4 条与技术债）。
 
 ### 技术债
 
