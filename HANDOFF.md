@@ -1,6 +1,6 @@
 # 交接说明 / 当前状态
 
-**最后更新：2026-08-05**
+**最后更新：2026-08-05（换电脑前的交接节点）**
 
 > ⚠️ 本仓库是**公开**的。本文档不包含任何密钥、License Key、API key 或凭据；
 > 需要这类信息时去 Creem 后台 / Cloudflare 控制台查。往本文档里补内容时请守住这条。
@@ -9,7 +9,7 @@
 
 ## 一句话状态
 
-Chrome 插件功能完整、文案齐备、上传包和商店截图都能一键生成，**但还不能上架**——付款链接仍指向 Creem 的 test 模式，真实用户付不了钱。这一项要等 Creem 商户审核通过后才能换。
+Chrome 插件功能完整、文案齐备、上传包和商店截图都能一键生成，**但还不能上架**——付款链接仍指向 Creem 的 test 模式，真实用户付不了钱。这一项要等 Creem 商户审核通过后才能换。**截至 2026-08-05 交接时，Creem 商户审核仍在进行中，仍卡在 live payment approval 这一步**，没有新进展，下一台机器上先去 Creem 后台确认审核状态。
 
 ---
 
@@ -108,15 +108,15 @@ node make-store-screenshots.js 4       # 只重截第 4 张
 1. **吊销那个泄露的 test 模式 License Key**（值见 Creem 后台，本文档不记录）。它曾以像素形式出现在一张已提交的截图里。历史已用 `git filter-branch` 重写并 force push，本地和任何新 clone 都拿不到了，**但 GitHub 服务端仍在按 SHA 提供旧对象**（实测确认过），force push 不删除远端对象。所以吊销是唯一彻底的解法。
 2. **确认 live 产品价格是 $14.99。** 之前 test 产品显示的是 $9.90。这个价格已经印在落地页、服务条款第 3 节、以及第 4 张商店截图**图片里**。不一致的话截图要重出：改 `make-store-screenshots.js` 顶部的 `PRO_PRICE` 常量，然后 `node make-store-screenshots.js 4`。
 3. ~~确认 Cloudflare Worker 用的是 live API key。~~ **2026-08-05 已核实：仍是 test。** 直接看了 Worker 部署代码，第 33 行请求的是 `https://test-api.creem.io/v1/licenses/activate`，不是 `api.creem.io`。目前阶段这是预期状态（还没走 live），**先不改**，等 Creem 审核通过、`popup.js` 的 `UPGRADE_URL` 换成 live checkout 时一并把这行也换成 live API，两处必须同批改——只改一处会导致 popup.js 指向 live checkout 但 Worker 还拿 test key 验 license，症状是**所有真实付费用户静默激活失败**。
-4. **给 `support@` 发一封测试邮件。** DNS 层面没问题，但证明不了 Cloudflare 侧的转发目标地址已验证通过——未验证的目标会导致邮件被静默丢弃。
+4. **给 `support@` 发一封测试邮件。** DNS 层面没问题，但证明不了 Cloudflare 侧的转发目标地址已验证通过——未验证的目标会导致邮件被静默丢弃。**截至 2026-08-05 交接时仍未做**，DNS/MX/SPF 都配置好了，但没有做过真实收件测试，下一台机器上先补这个。
 
 ### 技术债
 
-- **Cloudflare Worker 源码不在版本控制里。** 它是唯一持有 Creem API key、唯一决定 license 有效性的组件，目前只存在于 Cloudflare 线上。建议 `wrangler init` 拉回本地纳入 git。
+- **Cloudflare Worker 源码不在版本控制里。** 它是唯一持有 Creem API key、唯一决定 license 有效性的组件，目前只存在于 Cloudflare 线上编辑器里（2026-08-05 本次交接时通过在线编辑器确认过第 33 行代码，见上面 P0 相邻条目，但依然没有拉回本地）。建议 `wrangler init` 拉回本地纳入 git，避免这份唯一副本只活在网页后台。
 - **Worker 把上游认证错误和「key 无效」折叠成同一个 `valid:false`。** API key 一旦过期，表现就是所有付费用户激活失败，而返回值里看不出区别。建议区分「我们自己的故障」与「key 确实无效」，前端也给不同提示。
-- **`footerNote` 里的 "Last verified: 2026-08-04" 是硬编码静态字符串**，出现在全部 5 张截图和插件界面里。对一个「卖点是跟得上刚变的新规」的工具，这个日期越旧越伤可信度，需要定期更新。
+- **`footerNote` 里的 "Last verified: 2026-08-04" 是硬编码静态字符串**，出现在全部 5 张截图和插件界面里。**截至 2026-08-05 交接时还没更新**，已经过期 1 天。对一个「卖点是跟得上刚变的新规」的工具，这个日期越旧越伤可信度，需要定期更新（改 `_locales` 两个语言包，改完记得 `node make-store-screenshots.js` 重截）。
 - **`~€2 清关处理费预计 2026 年 11 月生效**，届时要回来更新 `_locales` 两个语言包的 `footerNote`、`store-listing.md` 的详细描述、以及服务条款第 2 节。
-- `store-listing.md` 的详细描述里没写价格，建议补 `$14.99` 与落地页、Creem 产品对齐。
+- `store-listing.md` 的详细描述里没写价格，建议补 `$14.99` 与落地页、Creem 产品对齐。**截至 2026-08-05 交接时仍未补。**
 
 ---
 
