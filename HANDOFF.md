@@ -107,7 +107,7 @@ node make-store-screenshots.js 4       # 只重截第 4 张
 
 1. **吊销那个泄露的 test 模式 License Key**（值见 Creem 后台，本文档不记录）。它曾以像素形式出现在一张已提交的截图里。历史已用 `git filter-branch` 重写并 force push，本地和任何新 clone 都拿不到了，**但 GitHub 服务端仍在按 SHA 提供旧对象**（实测确认过），force push 不删除远端对象。所以吊销是唯一彻底的解法。
 2. **确认 live 产品价格是 $14.99。** 之前 test 产品显示的是 $9.90。这个价格已经印在落地页、服务条款第 3 节、以及第 4 张商店截图**图片里**。不一致的话截图要重出：改 `make-store-screenshots.js` 顶部的 `PRO_PRICE` 常量，然后 `node make-store-screenshots.js 4`。
-3. **确认 Cloudflare Worker 用的是 live API key。** 用一个无效 key 探测 Worker 返回 `{"valid":false,"status":401}`，401 更像是 API key 认证失败而非 license 无效。如果 Worker 拿 test key 去验 live 产品签发的 key，症状会是**所有真实付费用户静默激活失败**。
+3. ~~确认 Cloudflare Worker 用的是 live API key。~~ **2026-08-05 已核实：仍是 test。** 直接看了 Worker 部署代码，第 33 行请求的是 `https://test-api.creem.io/v1/licenses/activate`，不是 `api.creem.io`。目前阶段这是预期状态（还没走 live），**先不改**，等 Creem 审核通过、`popup.js` 的 `UPGRADE_URL` 换成 live checkout 时一并把这行也换成 live API，两处必须同批改——只改一处会导致 popup.js 指向 live checkout 但 Worker 还拿 test key 验 license，症状是**所有真实付费用户静默激活失败**。
 4. **给 `support@` 发一封测试邮件。** DNS 层面没问题，但证明不了 Cloudflare 侧的转发目标地址已验证通过——未验证的目标会导致邮件被静默丢弃。
 
 ### 技术债
