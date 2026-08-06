@@ -180,6 +180,10 @@ document.getElementById('activateBtn').addEventListener('click', function () {
           document.getElementById('upgradePrompt').style.display = 'none';
           loadUsageAndPro(updateUsageDisplay);
         });
+      } else if (data && data.errorType === 'network') {
+        messageEl.className = 'error';
+        messageEl.textContent = chrome.i18n.getMessage('licenseActivateNetworkError');
+        messageEl.style.display = 'block';
       } else {
         messageEl.className = 'error';
         messageEl.textContent = chrome.i18n.getMessage('licenseActivateError');
