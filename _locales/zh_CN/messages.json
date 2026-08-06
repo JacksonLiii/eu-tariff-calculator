@@ -48,6 +48,12 @@
   "errorInvalidValue": {
     "message": "请输入大于0的申报价值"
   },
+  "errorInvalidCategoryCount": {
+    "message": "请输入大于等于1的整数作为品类数量"
+  },
+  "errorValueTooLarge": {
+    "message": "请输入更合理的申报价值（不超过1,000,000）"
+  },
   "upgradePromptText": {
     "message": "今日免费次数已用完，升级Pro解锁无限次数"
   },
@@ -92,6 +98,9 @@
   },
   "licenseActivateError": {
     "message": "License Key无效或已被使用，请检查后重试"
+  },
+  "licenseActivateNetworkError": {
+    "message": "无法连接激活服务器，请检查网络后重试"
   },
   "historyToggleText": {
     "message": "历史记录"

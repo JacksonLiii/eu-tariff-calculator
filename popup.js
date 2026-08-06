@@ -4,6 +4,7 @@ const USAGE_KEY = 'usageData';
 const PRO_KEY = 'isPro';
 const LICENSE_KEY_STORAGE = 'licenseKey';
 const FREE_DAILY_LIMIT = 5;
+const MAX_DECLARED_VALUE = 1000000;
 const UPGRADE_URL = 'https://www.creem.io/payment/prod_3lfYFVrPwHP7SXDvueO2gZ';
 const LICENSE_WORKER_URL = 'https://creem-license-proxy.lidingyao44.workers.dev';
 
@@ -187,7 +188,7 @@ document.getElementById('activateBtn').addEventListener('click', function () {
     })
     .catch(() => {
       messageEl.className = 'error';
-      messageEl.textContent = chrome.i18n.getMessage('licenseActivateError');
+      messageEl.textContent = chrome.i18n.getMessage('licenseActivateNetworkError');
       messageEl.style.display = 'block';
     })
     .finally(() => {
@@ -202,13 +203,27 @@ document.getElementById('calcBtn').addEventListener('click', function () {
   const countryCode = document.getElementById('countryCode').value;
 
   const declaredValue = parseFloat(declaredValueInput.value);
-  const categoryCount = parseInt(categoryCountInput.value, 10) || 1;
+  const categoryCount = Number(categoryCountInput.value);
 
   const errorEl = document.getElementById('error');
   const resultEl = document.getElementById('result');
 
   if (!declaredValue || declaredValue <= 0) {
     errorEl.textContent = chrome.i18n.getMessage('errorInvalidValue');
+    errorEl.style.display = 'block';
+    resultEl.style.display = 'none';
+    return;
+  }
+
+  if (declaredValue > MAX_DECLARED_VALUE) {
+    errorEl.textContent = chrome.i18n.getMessage('errorValueTooLarge');
+    errorEl.style.display = 'block';
+    resultEl.style.display = 'none';
+    return;
+  }
+
+  if (!Number.isInteger(categoryCount) || categoryCount < 1) {
+    errorEl.textContent = chrome.i18n.getMessage('errorInvalidCategoryCount');
     errorEl.style.display = 'block';
     resultEl.style.display = 'none';
     return;
@@ -251,6 +266,14 @@ document.getElementById('calcBtn').addEventListener('click', function () {
       chrome.storage.local.set({ [USAGE_KEY]: newUsage }, () => {
         updateUsageDisplay(newUsage, isPro);
       });
+    }
+  });
+});
+
+[document.getElementById('declaredValue'), document.getElementById('categoryCount')].forEach((input) => {
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      document.getElementById('calcBtn').click();
     }
   });
 });

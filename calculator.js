@@ -9,6 +9,10 @@ const VAT_RATES = {
 function calculateLandedCost(input) {
   const { declaredValue, categoryCount = 1, countryCode } = input;
 
+  if (!Number.isInteger(categoryCount) || categoryCount < 1) {
+    throw new Error(`Invalid categoryCount: ${categoryCount}`);
+  }
+
   const vatRate = VAT_RATES[countryCode];
   if (vatRate === undefined) {
     throw new Error(`Unsupported countryCode: ${countryCode}`);

@@ -48,6 +48,12 @@
   "errorInvalidValue": {
     "message": "Please enter a declared value greater than 0"
   },
+  "errorInvalidCategoryCount": {
+    "message": "Please enter a whole number of categories, 1 or more"
+  },
+  "errorValueTooLarge": {
+    "message": "Please enter a more realistic declared value (1,000,000 or less)"
+  },
   "upgradePromptText": {
     "message": "You've used all your free calculations for today. Upgrade to Pro for unlimited use."
   },
@@ -92,6 +98,9 @@
   },
   "licenseActivateError": {
     "message": "Invalid or already-used License Key. Please check and try again."
+  },
+  "licenseActivateNetworkError": {
+    "message": "Couldn't reach the activation server. Please check your internet connection and try again."
   },
   "historyToggleText": {
     "message": "History"
