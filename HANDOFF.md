@@ -187,3 +187,67 @@ node make-store-screenshots.js 4       # 只重截第 4 张
 | 历史重写只删那一张泄露截图，其余 8 张保留在历史里 | 其余不含敏感信息；把改动面缩到最小 |
 | 截图采用两段式合成 | popup 只有 300px 宽，直接贴到 1280×800 画布上是一条细条；先以 2 倍设备像素比单独截 popup，再放到合成页上缩放显示，文字才锐利 |
 | 截图脚本永不输入真实 License Key | 之前泄露就是因为 `test-i18n.js` 输入真实 key 后立即截图并提交。现在激活面板固定用占位文本，`test-i18n.js` 也改为截图前清空该字段、且输出到已 gitignore 的 `screenshots/` |
+
+---
+
+## 2026-08-06 代码审查 + Chrome Web Store 提交
+
+> 本节混合了两类信息，来源不同，下面逐条标明：一类是 **Claude Code 在这次会话里亲自改代码、跑测试验证过的**；一类是 **开发者本人在 Chrome Web Store / Cloudflare 后台操作后转述给 Claude Code 的**，Claude Code 没有这些后台的访问能力，没法独立验证，只是如实记录开发者的陈述。混着看容易把"我验证过"当成"事情发生过"，所以每条都标了来源。
+
+### 代码审查与修复（4 项必须修复，全部完成）
+
+1. **categoryCount 负数校验缺失** — 已修复（`popup.js` + `calculator.js` 双层防御）。Claude Code 用 node 直接验证 `calculateLandedCost` 对负数/0/小数会 `throw`，又用 Puppeteer 在真实加载的插件页面里验证 UI 层会拦截并报错，不产出负数结果。
+2. **declaredValue 无上限导致科学计数法显示** — 已修复（上限 1,000,000）。同样是 Claude Code 用 node + Puppeteer 双重验证。
+3. **Enter 键不触发计算** — 已修复（新增 `keydown` 监听）。Claude Code 用 Puppeteer 模拟真实按键，确认两个输入框按 Enter 都能触发计算或触发相应报错。
+4. **License 激活网络错误与 Key 无效共用同一句文案** — 已修复，**这一项是前后端配合完成的，验证方式也分两条完全不同的线，务必分清楚，不要混为一谈**：
+   - 前端 `popup.js` 里读取 `errorType` 字段来区分文案的逻辑，是 **Claude Code 编写**的。验证用的是新写的 `test-license-error-types.js`——一个 Puppeteer 脚本，用 **mock 的 `window.fetch`** 模拟四种响应（断网异常、`errorType:"network"`、`errorType:"invalid"`、`valid:true`），跑的是真实 `popup.js` 代码但假的网络层，**不是真实网络环境**。这台机器本身也连不上 `*.workers.dev`（实测是 connect timeout），所以 Claude Code 没有、也没法在真实网络条件下验证这条链路。
+   - Cloudflare Worker 端新增的 `errorType` 字段，是 **开发者本人**在 Cloudflare 在线编辑器里手动改并部署的。Claude Code 全程没有接触过 Worker 源码——这台机器没有 Cloudflare 登录凭证（`wrangler whoami` 确认未登录）。
+   - 「断网显示网络错误文案」「乱码 Key 显示 Key 无效文案」「有效 Key 激活成功」这三个真实场景，是 **开发者本人**在真实 Chrome 里手动断网 / 输入验证过的，**不是** Claude Code 自动化测试的结果。
+   - 结论：mock 测试（Claude Code 验证）+ 真实环境人工验证（开发者验证）**两件事都发生了**，但主体和方式完全不同，一个不能替代另一个，以后排查问题时别把"mock 测试通过"当成"真实环境也验证过"。
+
+**提交记录**（commit 由 Claude Code 创建，push 由开发者本人执行，Claude Code 看到过 push 后的远程分支输出）：
+- commit `b0c827a`：fix categoryCount/declaredValue/Enter 键/网络错误初版区分
+- commit `9c1a9f9`：fix 改用 errorType 字段精确区分网络错误 vs Key 无效
+
+均已 push 到 GitHub 远程仓库 `main` 分支。
+
+### 提交前自检
+
+完整报告见 `STORE-SUBMISSION-CHECK-2026-08.md`。**⚠️ 这个文件截至本次记录时还没有提交到 git，只存在于这台机器的工作区里**（`git status` 显示 untracked）——换电脑或者清理工作区之前，记得确认它是否需要单独提交，不然下一台机器上找不到。
+
+以下结论是 Claude Code 在这台机器上读代码、跑脚本核实过的：
+- manifest.json 权限审计：仅声明 `storage` 权限，代码里也确实只用到 `storage`（外加不需要声明权限的 `chrome.i18n` / `chrome.tabs.create`），没有多余也没有遗漏。
+- 版本号：`manifest.json` 的 `version` 仍是 `0.1.0`，是否升级到 `1.0.0` 由开发者自己决定，Claude Code 没有擅自修改。
+- 打包会用到的 4 个文件（`popup.js`/`calculator.js`/`popup.html` + 两份语言包）里零 `console.log` 残留、零测试用 License Key / test-api 端点；`test-*.js`/`scratch-*.js` 这些开发脚本里有，但按白名单不会进包。
+- i18n（en/zh_CN）本次会话新增的 3 个 key（`errorInvalidCategoryCount`、`errorValueTooLarge`、`licenseActivateNetworkError`）两个语言包里都存在且已翻译，40 个 key 完全对应，无缺翻译。
+- `thank-you.html` 引导文案与 `popup.js` 实际 UI 文案（激活入口 / 按钮文案 / 成功提示）逐条比对完全一致。
+- Worker 是否真的在用 live `api.creem.io`——**这条 Claude Code 没法独立核实**（无 Cloudflare 访问、连不上 `*.workers.dev`），只能引用本文档更早记录的历史确认（见上面 P0 一节）。
+
+隐私政策 URL：`https://eutariffcalculator.com/PRIVACY_POLICY.html`。**开发者本人已亲自打开确认页面正常显示、可访问**——Claude Code 所在环境没有出网权限，这条是开发者的人工确认，不是 Claude Code 验证的。
+
+### 商店素材
+
+- "仓库外备份 `../screenshots-backup.zip` 不可用"这条结论，**来源是 `store-listing.md` 里早就存在的记录**（尺寸不对：800×600 / 800×628 / 785×628，部分截图带 Creem test-mode 横幅或第三方结账页面，其中一张明文含真实 License Key，已从 git 历史里移除），**不是这次会话新发现的**。这次会话专门查过这台机器，确认压根没有 `screenshots-backup.zip` 这个文件（项目目录和 Desktop 下都搜过、都没有），所以谈不上"废弃删除"——它本来就不在这台机器上。
+- 新的 5 张商店截图用 Claude Code 新写的 `generate-store-screenshots-dist.js` 生成。**⚠️ 这个脚本同样还没有提交到 git，是工作区文件**，跟 `STORE-SUBMISSION-CHECK-2026-08.md` 一样需要单独确认是否要提交。特点：
+  - 从 `dist/eu-tariff-calculator-v0.1.0/`（`build.ps1` 打包后解压出来的真实上传内容）加载插件，不是从源码目录加载，截图反映的是真正会上传的东西。
+  - 5 个场景全部走真实 UI 交互（真点 Calculate、真输入值、真连续点击触发限额），不是靠直接写 `chrome.storage` 伪造状态。
+  - Claude Code 实测：5 张全部 1280×800、24-bit RGB PNG（PNG IHDR 里 color type = 2，无 alpha 通道）。
+  - 内容和英文界面由 Claude Code 用截图查看工具逐张人工检查过，数值、文案、语言都对（例如 €50/Germany 场景确认显示 Duty €3.00 / VAT €10.07 / Total €63.07）。
+  - 仓库里原有的 `make-store-screenshots.js`（营销文案风格，直接写 `chrome.storage` 伪造历史 / 限额状态，从源码目录加载）**依然保留，两个脚本并存**，最终提交用哪一个生成的截图，开发者还没决定。
+
+### Chrome Web Store 提交
+
+> ⚠️ 以下内容全部来自 **开发者本人在 Chrome Web Store 后台的实际操作**，是开发者在对话里转述给 Claude Code 并确认准确性的。Claude Code 在这次会话里没有 Chrome Web Store 后台的访问能力，这一节里的每一个字段都没有被 Claude Code 亲自验证过，纯粹是转述记录。
+
+- 交易者声明：选择"交易者账号"（因产品为 $14.99 付费产品，符合以营利为目的的定义），身份验证暂缓（不阻塞插件提交，仅影响收款相关功能，后续需要时再补）。
+- 商品详情：标题 / 摘要 / 说明详见 `store-listing.md`，类别选择"工作流程与规划"（Workflow & Planning）。
+- 隐私权：数据使用披露勾选"身份验证信息"（对应 License Key 传输），远程代码选择"不"（Worker 仅返回 JSON 数据，不加载执行远程脚本），3 个数据使用承诺复选框全部勾选。
+- 分发：免费、公开、全部地区。
+- 提交时间：2026-08-06，状态：待审核（预计几小时到几天）。
+
+### 待办（不阻塞已提交的审核，后续可做）
+
+- Chrome 开发者账号身份验证（收款能力，需身份证件 + 地址证明）。
+- 视需求补充德语 / 法语商店列表文案（当前仅 en + zh_CN 两个插件界面语言，Chrome i18n 会整体回退显示英文，不会空白，不影响可用性；Chrome Web Store 商品详情页语言同理，只填了英语的情况下其他语言用户会看到英语版本兜底，不会空白。这条不紧急，可以上架后再补，不需要卡在这次提交，具体要不要补取决于目标用户画像——如果目标用户主要是做跨境生意的卖家，英语基本够用；如果预期有欧盟本地卖家/清关行用户，德语优先级最高）。
+- 之前遗留的技术债：`creem-license-proxy` 的 Worker 源码仅存在于 Cloudflare 在线编辑器，未纳入 git 版本控制，建议找时间存一份备份进仓库。
+- **本次会话产生但截至记录时尚未提交到 git 的工作区文件**，下次开始前先看一遍 `git status`：`STORE-SUBMISSION-CHECK-2026-08.md`（提交前自检报告）、`generate-store-screenshots-dist.js`（新截图生成脚本）、`build.ps1`（改动是加了 UTF-8 BOM，修复 Windows PowerShell 5.1 无法解析脚本里内嵌中文字符正则的问题，逻辑内容未变）。
